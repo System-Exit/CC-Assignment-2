@@ -2,9 +2,11 @@ from flask import Flask
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager, current_user, login_user, logout_user
 from config import Config
+from database_interface import DatabaseInterface
 
 bootstrap = Bootstrap()
 login_manager = LoginManager()
+dbi = DatabaseInterface()
 
 
 def create_app(config_class=Config):
