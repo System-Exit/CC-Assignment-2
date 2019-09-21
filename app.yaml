@@ -1,0 +1,9 @@
+runtime: python37
+
+env_variables:
+  SECERT_KEY: "884f33f5-4818-4543-9f7e-a4fbb9973c04"
+  GDB_USERNAME: "TODO"
+  GDB_PASSWORD: "TODO"
+  GDB_HOST: ""
+  GDB_DATABASE: "Database"
+  GDB_QUERY: "?unix_socket=/cloudsql/lustrous-oasis-253108:australia-southeast1:database"
