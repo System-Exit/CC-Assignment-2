@@ -84,3 +84,72 @@ class DatabaseInterface:
             session.expunge(user)
         # Return user
         return user
+
+    def createuser(self, username, password):
+        """
+        Add new user to user database table.
+        Also handles hashing and salting of given password.
+
+        Args:
+            username (str): Username for new user.
+            password (str): Password for new user.
+        Returns:
+            bool: Whether or not the user was added.
+        """
+        # Initialse session
+        with self.sessionmanager() as session:
+            # Check that username is available. If not, return false.
+            user = session.query(User).filter(
+                   User.username == username).first()
+            if(user is not None):
+                return False
+            # Hash password
+            passhash = PasswordHasher().hash(userpass)
+            # Create user
+            user = User(
+                username=str(username),
+                passhash=str(passhash)
+            )
+            # Add user to database
+            session.add(user)
+        # Return success
+        return True
+
+    def validateuser(self, username, password):
+        """
+        Verifies if the user with the given username and password exists.
+
+        Args:
+            username (str): Username of user to verify.
+            password (str): Password of user to verify.
+        Retruns:
+            True if the user exists and the password is valid, False otherwise.
+            User ID if the user exists and password is valid, None otherwise.
+
+        """
+        # Initialse session
+        with self.sessionmanager() as session:
+            # Initialise password hasher
+            ph = PasswordHasher()
+            # Query if user exists
+            user = session.query(User).filter(
+                User.username == username).first()
+            # Check if query returns a user
+            if user is not None:
+                # Verify whether the password is valid or not
+                try:
+                    ph.verify(user.passhash, password)
+                except VerifyMismatchError:
+                    # Password does not match, return false
+                    return False, None
+                # Check if password needs to be rehashed
+                if ph.check_needs_rehash(user.userpass):
+                    # Generate new hash
+                    rehash = ph.hash(userpass)
+                    # Update user record to include new hash
+                    user.userpass = rehash
+                # Since user exists and password is valid, return true
+                return True, user.userID
+            else:
+                # User doesn't exist, return false
+                return False, None
