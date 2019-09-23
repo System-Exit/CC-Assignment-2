@@ -18,11 +18,11 @@ class DatabaseInterface:
     def __init__(self, config_class=Config):
         # Define SQL connection parameters
         drivername = 'mysql+pymysql'
-        username = config_class.GDB_USERNAME
-        password = config_class.GDB_PASSWORD
-        host = config_class.GDB_HOST
-        database = config_class.GDB_DATABASE
-        query = config_class.GDB_QUERY
+        username = config_class.DB_USERNAME
+        password = config_class.DB_PASSWORD
+        host = config_class.DB_HOST
+        database = config_class.DB_DATABASE
+        query = config_class.DB_QUERY
         # Create engine
         self.engine = create_engine("%s://%s:%s@%s/%s%s" % (
             drivername, username, password, host, database, query))
@@ -46,21 +46,21 @@ class DatabaseInterface:
         finally:
             session.close()
 
-    def createtables(self):
-        """
-        Creates all tables in the database.
+    # def createtables(self):
+    #     """
+    #     Creates all tables in the database.
 
-        """
-        # Create all tables in the database
-        Base.metadata.create_all(self.engine)
+    #     """
+    #     # Create all tables in the database
+    #     Base.metadata.create_all(self.engine)
 
-    def droptables(self):
-        """
-        Drops all tables in the database. DO NOT USE LIGHTLY.
+    # def droptables(self):
+    #     """
+    #     Drops all tables in the database. DO NOT USE LIGHTLY.
 
-        """
-        # Drop all tables in the database
-        Base.metadata.drop_all(self.engine)
+    #     """
+    #     # Drop all tables in the database
+    #     Base.metadata.drop_all(self.engine)
 
     def getuserbyid(self, userid):
         """
@@ -104,7 +104,7 @@ class DatabaseInterface:
             if(user is not None):
                 return False
             # Hash password
-            passhash = PasswordHasher().hash(userpass)
+            passhash = PasswordHasher().hash(password)
             # Create user
             user = User(
                 username=str(username),
@@ -143,13 +143,13 @@ class DatabaseInterface:
                     # Password does not match, return false
                     return False, None
                 # Check if password needs to be rehashed
-                if ph.check_needs_rehash(user.userpass):
+                if ph.check_needs_rehash(user.passhash):
                     # Generate new hash
                     rehash = ph.hash(userpass)
                     # Update user record to include new hash
                     user.userpass = rehash
                 # Since user exists and password is valid, return true
-                return True, user.userID
+                return True, user.userid
             else:
                 # User doesn't exist, return false
                 return False, None

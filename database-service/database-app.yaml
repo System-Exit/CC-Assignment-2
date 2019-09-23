@@ -1,0 +1,10 @@
+runtime: python37
+service: database
+entrypoint: gunicorn -b :$PORT main:app
+
+env_variables:
+  DB_USERNAME: "root"
+  DB_PASSWORD: "toor"
+  DB_HOST: ""
+  DB_DATABASE: "database"
+  DB_QUERY: "?unix_socket=/cloudsql/lustrous-oasis-253108:australia-southeast1:s3661720-cc-a2"
