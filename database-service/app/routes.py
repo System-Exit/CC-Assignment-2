@@ -1,15 +1,6 @@
 from flask import (Flask, render_template, request, session,
                    redirect, url_for, flash, jsonify, abort, Blueprint)
-from models import User, Base
-from config import Config
-from sqlalchemy import create_engine, asc, desc
-from sqlalchemy.orm import sessionmaker
-from argon2 import PasswordHasher
-from argon2.exceptions import VerifyMismatchError
-from contextlib import contextmanager
 import json
-import requests
-import math
 from app import dbi
 
 # Initialise blueprints
@@ -33,8 +24,9 @@ def getuser():
     """
     # Get data
     data = request.get_json()
+    userid = data['userid']
     # Get user
-    user = dbi.getuserbyid(data['userid'])
+    user = dbi.getuserbyid(userid)
     # If user is None, return false
     if user is None:
         return jsonify(success=False)
