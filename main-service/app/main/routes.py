@@ -1,9 +1,9 @@
 from flask import (Flask, render_template, request, session,
                    redirect, url_for, flash, jsonify, abort)
 from flask_login import LoginManager, current_user, login_user, logout_user
-from forms import UserLoginForm, UserRegistrationForm
 from app import dbi, login_manager
 from app.main import bp
+from app.main.forms import UserLoginForm, UserRegistrationForm
 
 
 @login_manager.user_loader
@@ -21,35 +21,16 @@ def index():
     Landing page for users.
 
     """
-    # Render index template
-    return render_template('index.html')
+    # Check if user is currently logged in
+    if current_user.is_authenticated:
+        # Render index page
+        return render_template('index.html', user=current_user)
+    else:
+        # Render landing page
+        return render_template('landing.html')
 
 
-@bp.route('/login')
-def login():
-    """
-    Page for login as user.
-
-    """
-    # Initialise login form
-    form = UserLoginForm()
-    # Process login form if submitted
-    if form.validate_on_submit():
-        # Get field values
-        username = form.username.data
-        password = form.password.data
-        # Validate credentials
-        valid, userid = dbi.validateuser(username, password)
-        # If valid, log user in and redirect to user index
-        if valid:
-            login_user(userid)
-        else:
-            flash("Invalid credentials.", category="error")
-    # Render login template
-    return render_template('login.html', form=form)
-
-
-@bp.route('/registration')
+@bp.route('/registration', methods=['GET', 'POST'])
 def registration():
     """
     Page for registration as a user.
@@ -67,8 +48,46 @@ def registration():
         # If valid, log user in and redirect to user index
         if result:
             flash("Registration successful!", category="success")
-            return redirect(url_for('login'))
+            return redirect(url_for('main.login'))
         else:
             flash("Registration unsuccessful!", category="error")
     # Render registration page
     return render_template('registration.html', form=form)
+
+
+@bp.route('/login', methods=['GET', 'POST'])
+def login():
+    """
+    Page for login as user.
+
+    """
+    # Initialise login form
+    form = UserLoginForm()
+    # Process login form if submitted
+    if form.validate_on_submit():
+        # Get field values
+        username = form.username.data
+        password = form.password.data
+        # Validate credentials
+        valid = dbi.validateuser(username, password)
+        # If valid, log user in and redirect to user index
+        if valid:
+            user = dbi.getuser(username=username)
+            login_user(user)
+            return redirect(url_for('main.index'))
+        else:
+            flash("Invalid credentials.", category="error")
+    # Render login template
+    return render_template('login.html', form=form)
+
+
+@bp.route('/logout', methods=['GET', 'POST'])
+def logout():
+    """
+    Handles user logouts.
+
+    """
+    # Log user out
+    logout_user()
+    # Redirect to landing page
+    return redirect(url_for('main.index'))

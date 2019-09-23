@@ -1,6 +1,7 @@
 import json
 import requests
 from models import User
+from config import Config
 
 
 class DatabaseInterface:
@@ -12,26 +13,29 @@ class DatabaseInterface:
         # Initialise address
         self.api_address = Config.DBI_ADDRESS
 
-    def getuser(self, userid=None):
+    def getuser(self, userid=None, username=None):
         """
         Get a user object based on parameters.
 
         Args:
             userid (str): ID of user to get. Defaults to None.
+            username (str): Username of the user to get. Defaults to None.
         Returns:
             The specified user.
             None if no such user exists.
 
         """
         # Contruct parameters
-        params = {}
+        data = {}
         if userid:
-            params['userid'] = userid
+            data['userid'] = userid
+        if username:
+            data['username'] = username
         # Request user details
-        response = requests.get(f"{self.api_address}/getuser", params=params)
+        response = requests.post(f"{self.api_address}/getuser", json=data)
         data = response.json()
         # Check if user was returned
-        if not data['userid']:
+        if not data.get('userid'):
             # Return None
             return None
         else:
@@ -54,7 +58,7 @@ class DatabaseInterface:
         """
         # Send data for user creation
         data = {"username": username, "password": password}
-        response = requests.get(f"{self.api_address}/createuser", data=data)
+        response = requests.post(f"{self.api_address}/createuser", json=data)
         # Get data from repsonse
         data = response.json()
         # Check if successful
@@ -72,16 +76,12 @@ class DatabaseInterface:
             password (str): Password of user to verify.
         Retruns:
             True if the user exists and the password is valid, False otherwise.
-            User ID if the user exists and password is valid, None otherwise.
 
         """
         # Send data for user validation
         data = {"username": username, "password": password}
-        response = requests.get(f"{self.api_address}/validateuser", data=data)
+        response = requests.post(f"{self.api_address}/validateuser", json=data)
         # Get data from repsonse
         data = response.json()
-        # Check if validation was successful
-        if data['success']:
-            return True, data['userid']
-        else:
-            return False, None
+        # Return whether validation was successful along with userid
+        return data['success']

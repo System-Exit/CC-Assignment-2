@@ -29,8 +29,6 @@ class UserRegistrationForm(FlaskForm):
         DataRequired('Username is required')])
     password = PasswordField('Password', validators=[
         DataRequired('Password is required')])
-    gender = SelectField('Gender', choices=[
-        ('M', 'Male'), ('F', 'Female'), ('O', 'Other')])
     submit = SubmitField('Register')
 
     def validate(self):
@@ -40,7 +38,7 @@ class UserRegistrationForm(FlaskForm):
             if validation is False:
                 return False
             # Check if username is already taken
-            if dbi.getuserbyusername(self.username.data) is not None:
+            if dbi.getuser(username=self.username.data) is not None:
                 # Add error and set valid to false
                 self.username.errors.append(
                     "Username is already used by another account")

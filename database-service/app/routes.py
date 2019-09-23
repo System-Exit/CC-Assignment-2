@@ -24,9 +24,10 @@ def getuser():
     """
     # Get data
     data = request.get_json()
-    userid = data['userid']
+    userid = data.get('userid')
+    username = data.get('username')
     # Get user
-    user = dbi.getuserbyid(userid)
+    user = dbi.getuser(userid=userid, username=username)
     # If user is None, return false
     if user is None:
         return jsonify(success=False)
@@ -66,6 +67,6 @@ def validateuser():
     username = data['username']
     password = data['password']
     # Validate user credentials
-    success, userid = dbi.validateuser(username, password)
+    success = dbi.validateuser(username, password)
     # Return whether or not credentials are valid and the ID of the user
-    return jsonify(success=success, userid=userid)
+    return jsonify(success=success)

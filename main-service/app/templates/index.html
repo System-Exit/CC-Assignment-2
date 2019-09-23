@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
 <div id="index-body">
-    <h1>Hello World!</h1>
+    {% include "messageblock.html" %}
+    <h2>You are currently logged in as {{ user.get_username() }}</h2>
+    <a href="{{ url_for('main.logout') }}">Log out</a>
 </div>
 {% endblock %}

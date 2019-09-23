@@ -62,12 +62,13 @@ class DatabaseInterface:
     #     # Drop all tables in the database
     #     Base.metadata.drop_all(self.engine)
 
-    def getuserbyid(self, userid):
+    def getuser(self, userid=None, username=None):
         """
         Get a detached user object based on user's ID.
 
         Args:
-            userid (str): ID of user to get.
+            userid (str): ID of user to get. Defaults to None.
+            username (str): Username of user to get. Defaults to None.
         Returns:
             User object detached from any session.
             None if no such user exists.
@@ -75,8 +76,16 @@ class DatabaseInterface:
         """
         # Initialse session
         with self.sessionmanager() as session:
+            # If both parameters are false, return None
+            if not userid and not username:
+                return None
+            # Query for user based on parameters
+            if userid:
+                query = session.query(User).filter(User.userid == userid)
+            if username:
+                query = session.query(User).filter(User.username == username)
             # Get user
-            user = session.query(User).filter(User.userid == userid).first()
+            user = query.first()
             # Check if a user was returned
             if user is None:
                 return None
@@ -124,7 +133,6 @@ class DatabaseInterface:
             password (str): Password of user to verify.
         Retruns:
             True if the user exists and the password is valid, False otherwise.
-            User ID if the user exists and password is valid, None otherwise.
 
         """
         # Initialse session
@@ -149,7 +157,7 @@ class DatabaseInterface:
                     # Update user record to include new hash
                     user.userpass = rehash
                 # Since user exists and password is valid, return true
-                return True, user.userid
+                return True
             else:
                 # User doesn't exist, return false
-                return False, None
+                return False

@@ -6,7 +6,7 @@ class User(UserMixin):
     Model for users.
 
     """
-    def __init__(userid, username):
+    def __init__(self, userid, username):
         self.__userid = userid
         self.__username = username
 
