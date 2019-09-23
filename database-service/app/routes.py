@@ -25,19 +25,20 @@ def index():
     return "API for database access."
 
 
-@bp.route('/getuser')
+@bp.route('/getuser', methods=['POST'])
 def getuser():
     """
     Gets user from database and returns user data as JSON.
 
     """
-    # Get parameters
-    userid = request.args.get('userid') or None
+    # Get data
+    data = request.get_json()
     # Get user
-    user = dbi.getuserbyid(userid)
+    user = dbi.getuserbyid(data['userid'])
     # If user is None, return false
-    return jsonify(success=False)
-    # Convert user into dict
+    if user is None:
+        return jsonify(success=False)
+    # Convert user into dictionary
     data = {
         "userid": user.userid,
         "username": user.username
