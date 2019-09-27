@@ -1,9 +1,16 @@
 from flask import Flask
 from config import Config
-from database_interface import DatabaseInterface
+import firebase_admin
+from firebase_admin import credentials, firestore
 
-# Initialise database interface class
-dbi = DatabaseInterface()
+# Load service credentials
+cred = credentials.Certificate(
+    ('C:/Users/rocky/Documents/RMIT Work/Year 3 Semester 2'
+     '/CC/Assignment 2/service-account-file.json'))
+# Initialise firebase app
+firebase_admin.initialize_app(cred)
+# Define datbase interface
+db = firestore.client()
 
 
 def create_app(config_class=Config):

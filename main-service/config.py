@@ -7,5 +7,7 @@ class Config:
 
     """
     SECRET_KEY = os.getenv('SECRET_KEY') or 'PLACEHOLDERSECRETKEY'
-    DBI_ADDRESS = os.getenv('DBI_ADDRESS') or ("https://database-dot-lustrous"
-                                               "-oasis-253108.appspot.com")
+    USER_SERVICE_ADDRESS = os.getenv('USER_SERVICE_ADDRESS') or (
+        "https://user-dot-lustrous-oasis-253108.appspot.com")
+    MESSAGE_SERVICE_ADDRESS = os.getenv('MESSAGE_SERVICE_ADDRESS') or (
+        "https://message-dot-lustrous-oasis-253108.appspot.com")

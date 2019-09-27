@@ -1,0 +1,5 @@
+runtime: python37
+service: user
+
+env_variables:
+  SECRET_KEY: "9b197780-8a29-4105-8657-70041d4a8aa5"
