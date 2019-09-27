@@ -4,14 +4,14 @@ from models import User
 from config import Config
 
 
-class DatabaseInterface:
+class UserServiceInterface:
     """
-    Interface class for interactions with the database
+    Interface class for interactions with users
 
     """
     def __init__(self, config_class=Config):
         # Initialise address
-        self.api_address = Config.DBI_ADDRESS
+        self.api_address = Config.USER_SERVICE_ADDRESS
 
     def getuser(self, userid=None, username=None):
         """
@@ -26,22 +26,22 @@ class DatabaseInterface:
 
         """
         # Contruct parameters
-        data = {}
+        senddata = {}
         if userid:
-            data['userid'] = userid
+            senddata['id'] = userid
         if username:
-            data['username'] = username
+            senddata['username'] = username
         # Request user details
-        response = requests.post(f"{self.api_address}/getuser", json=data)
-        data = response.json()
+        response = requests.post(f"{self.api_address}/getuser", json=senddata)
+        recvdata = response.json()
         # Check if user was returned
-        if not data.get('userid'):
+        if not recvdata.get('id'):
             # Return None
             return None
         else:
             # Create user object
-            userid = data['userid']
-            username = data['username']
+            userid = recvdata.get('id')
+            username = recvdata.get('username')
             user = User(userid, username)
             # Return user
             return user
@@ -85,3 +85,16 @@ class DatabaseInterface:
         data = response.json()
         # Return whether validation was successful along with userid
         return data['success']
+
+
+class MessageServiceInterface:
+    """
+    Interface class for interactions with messages
+
+    """
+    def __init__(self):
+        """
+
+
+        """
+        pass

@@ -1,7 +1,7 @@
 from flask import (Flask, render_template, request, session,
                    redirect, url_for, flash, jsonify, abort)
 from flask_login import LoginManager, current_user, login_user, logout_user
-from app import dbi, login_manager
+from app import usi, msi, login_manager
 from app.main import bp
 from app.main.forms import UserLoginForm, UserRegistrationForm
 
@@ -9,7 +9,7 @@ from app.main.forms import UserLoginForm, UserRegistrationForm
 @login_manager.user_loader
 def load_user(userid):
     # Query database for user
-    user = dbi.getuser(userid=userid)
+    user = usi.getuser(userid=userid)
     # Return user
     return user
 
@@ -44,7 +44,7 @@ def registration():
         username = form.username.data
         password = form.password.data
         # Create user
-        result = dbi.createuser(username, password)
+        result = usi.createuser(username, password)
         # If valid, log user in and redirect to user index
         if result:
             flash("Registration successful!", category="success")
@@ -69,7 +69,7 @@ def login():
         username = form.username.data
         password = form.password.data
         # Validate credentials
-        valid = dbi.validateuser(username, password)
+        valid = usi.validateuser(username, password)
         # If valid, log user in and redirect to user index
         if valid:
             user = dbi.getuser(username=username)
