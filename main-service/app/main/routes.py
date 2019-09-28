@@ -1,7 +1,7 @@
 from flask import (Flask, render_template, request, session,
                    redirect, url_for, flash, jsonify, abort)
 from flask_login import LoginManager, current_user, login_user, logout_user
-from app import usi, msi, login_manager
+from app import usi, esi, login_manager
 from app.main import bp
 from app.main.forms import UserLoginForm, UserRegistrationForm
 
@@ -72,7 +72,7 @@ def login():
         valid = usi.validateuser(username, password)
         # If valid, log user in and redirect to user index
         if valid:
-            user = dbi.getuser(username=username)
+            user = usi.getuser(username=username)
             login_user(user)
             return redirect(url_for('main.index'))
         else:
@@ -91,3 +91,15 @@ def logout():
     logout_user()
     # Redirect to landing page
     return redirect(url_for('main.index'))
+
+
+@bp.routes('/events', methods=['GET', 'POST'])
+def eventlist():
+    """
+    Page for events.
+
+    """
+    # Get events for current user
+    events = esi.getuserevents(current_user.get_id())
+    # Render template with events
+    return render_template('eventlist.html', events=events)

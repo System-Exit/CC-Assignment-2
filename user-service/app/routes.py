@@ -4,7 +4,6 @@ import json
 from app import db
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
-from firebase_admin import credentials, firestore
 
 # Initialise blueprints
 bp = Blueprint('main', __name__)
@@ -32,7 +31,7 @@ def getuser():
     # If nethier field is specified, return failure
     if not data.get('id') and not data.get('username'):
         return jsonify(success=False,
-                       messages=["User with id not found."])
+                       messages=["Username or id must be specified."])
     # Get user by id if specified
     elif data.get('id'):
         id = str(data.get('id'))
@@ -40,14 +39,15 @@ def getuser():
         # If user is not found, return failure
         if user.exists is False:
             return jsonify(success=False,
-                           messages=["User with username not found."])
+                           messages=["User with id not found."])
     # Get user by username if specified
     elif data.get('username'):
         username = str(data.get('username'))
         user = check_collection_contains(
             db.collection('users'), 'username', username)
         if not user:
-            return jsonify(success=False)
+            return jsonify(success=False,
+                           messages=["User with id not found."])
     # Convert user into dictionary
     data = {
         "id": user.id,

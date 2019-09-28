@@ -9,7 +9,7 @@ bootstrap = Bootstrap()
 login_manager = LoginManager()
 # Initialise microservice interfaces
 usi = DatabaseInterface()
-msi = MessageServiceInterface()
+esi = EventServiceInterface()
 
 
 def create_app(config_class=Config):

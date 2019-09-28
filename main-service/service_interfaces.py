@@ -1,5 +1,6 @@
 import json
 import requests
+from datetime import datetime
 from models import User
 from config import Config
 
@@ -83,18 +84,53 @@ class UserServiceInterface:
         response = requests.post(f"{self.api_address}/validateuser", json=data)
         # Get data from repsonse
         data = response.json()
-        # Return whether validation was successful along with userid
-        return data['success']
+        # Return whether validation was successful along with user id
+        return data.get('success'), data.get('id')
 
 
-class MessageServiceInterface:
+class EventServiceInterface:
     """
-    Interface class for interactions with messages
+    Interface class for interactions with messages.
 
     """
     def __init__(self):
-        """
+        # Initialise address
+        self.api_address = Config.EVENT_SERVICE_ADDRESS
 
+    def getuserevents(self, user_id):
+        """
+        Returns the events for a given user.
 
         """
-        pass
+        # Send data for user creation
+        data = {"user_id": user_id}
+        response = requests.post(
+            f"{self.api_address}/getuserevents", json=data)
+        # Get data from repsonse
+        data = response.json()
+        # Parse event into a dictionary
+        events = data.get('events')
+        # Return events
+        return events
+
+    def addevent(self, title, description=None, user_id,
+                 address=None, time, travel_method=None):
+        """
+        Creates event for user.
+
+        """
+        # Send data for user creation
+        data = {
+            "title": str(title),
+            "description": str(description),
+            "user_id": str(user_id),
+            "address": str(address),
+            "time": time.isoformat(),
+            "tarvel_method": str(travel_method),
+        }
+        response = requests.post(
+            f"{self.api_address}/addevent", json=data)
+        # Get data from repsonse
+        data = response.json()
+        # Return whether validation was successful
+        return data.get('success')
