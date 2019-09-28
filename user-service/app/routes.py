@@ -31,14 +31,16 @@ def getuser():
     data = request.get_json()
     # If nethier field is specified, return failure
     if not data.get('id') and not data.get('username'):
-        return jsonify(success=False)
+        return jsonify(success=False,
+                       messages=["User with id not found."])
     # Get user by id if specified
     elif data.get('id'):
         id = str(data.get('id'))
         user = db.collection('users').document(id).get()
         # If user is not found, return failure
         if user.exists is False:
-            return jsonify(success=False)
+            return jsonify(success=False,
+                           messages=["User with username not found."])
     # Get user by username if specified
     elif data.get('username'):
         username = str(data.get('username'))
@@ -65,7 +67,8 @@ def createuser():
     data = request.get_json()
     # Check that all required fields are included
     if not data.get('username') or not data.get('password'):
-        return jsonify(success=False)
+        return jsonify(success=False,
+                       messages=["Username and password required"])
     # Assign user variables
     username = str(data['username'])
     password = str(data['password'])
@@ -73,7 +76,8 @@ def createuser():
     user = check_collection_contains(
         db.collection('users'), 'username', username)
     if user is not None:
-        return jsonify(success=False)
+        return jsonify(success=False,
+                       messages=["Username already taken"])
     # Hash password
     passhash = PasswordHasher().hash(password)
     # Create and add user to database
@@ -95,7 +99,8 @@ def validateuser():
     data = request.get_json()
     # Check that all required fields are included
     if not data.get('username') or not data.get('password'):
-        return jsonify(success=False, message="Missing fields.")
+        return jsonify(success=False,
+                       messages=["Username and assword required"])
     # Assign user variables
     username = str(data['username'])
     password = str(data['password'])
@@ -104,12 +109,14 @@ def validateuser():
         db.collection('users'), 'username', username)
     # Check that user exists
     if user is None:
-        return jsonify(success=False, message="User does not exist.")
+        return jsonify(success=False,
+                       messages=["User does not exist"])
     # Verify whether or not password is valid
     try:
         valid = PasswordHasher().verify(user.to_dict()['passhash'], password)
     except VerifyMismatchError:
-        return jsonify(success=False, message="Invalid password.")
+        return jsonify(success=False,
+                       messages=["Invalid password"])
     # Return success
     return jsonify(success=True)
 
