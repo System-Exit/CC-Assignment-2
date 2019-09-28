@@ -97,22 +97,6 @@ class EventServiceInterface:
         # Initialise address
         self.api_address = Config.EVENT_SERVICE_ADDRESS
 
-    def getuserevents(self, user_id):
-        """
-        Returns the events for a given user.
-
-        """
-        # Send data for user creation
-        data = {"user_id": user_id}
-        response = requests.post(
-            f"{self.api_address}/getuserevents", json=data)
-        # Get data from repsonse
-        data = response.json()
-        # Parse event into a dictionary
-        events = data.get('events')
-        # Return events
-        return events
-
     def addevent(self, title, description=None, user_id,
                  address=None, time, travel_method=None):
         """
@@ -134,3 +118,19 @@ class EventServiceInterface:
         data = response.json()
         # Return whether validation was successful
         return data.get('success')
+
+    def getuserevents(self, user_id):
+        """
+        Returns the events for a given user.
+
+        """
+        # Send data for user creation
+        data = {"user_id": user_id}
+        response = requests.post(
+            f"{self.api_address}/getuserevents", json=data)
+        # Get data from repsonse
+        data = response.json()
+        # Parse event into a dictionary
+        events = data.get('events')
+        # Return events
+        return events
