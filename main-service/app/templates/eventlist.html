@@ -1,0 +1,17 @@
+{% extends "userlayout.html" %}
+{% block content %}
+<div>
+    {% include "messageblock.html" %}
+    {% for id in events %}
+        <div class="event-item">
+            <h3>{{ events[id].title }}</h3>
+            <p>{{ events[id].description }}</p>
+            <p>{{ events[id].address }}</p>
+            <p>{{ events[id].time }}</p>
+            <p>{{ events[id].travel_method }}</p>
+        </div>
+    {% endfor %}
+    {% set create_event_url = url_for('main.addevent') %}
+    <button onclick="location.href='{{ create_event_url }}';">Create new event</button>
+</div>
+{% endblock %}

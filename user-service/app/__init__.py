@@ -4,9 +4,12 @@ import firebase_admin
 from firebase_admin import credentials, firestore
 
 # Load service credentials
-cred = credentials.Certificate(
-    ('C:/Users/rocky/Documents/RMIT Work/Year 3 Semester 2'
-     '/CC/Assignment 2/service-account-file.json'))
+if Config.CLOUD_ENV:
+    cred = credentials.ApplicationDefault()
+else:
+    cred = credentials.Certificate(
+        ('C:/Users/rocky/Documents/RMIT Work/Year 3 Semester 2'
+         '/CC/Assignment 2/service-account-file.json'))
 # Initialise firebase app
 firebase_admin.initialize_app(cred)
 # Define datbase interface

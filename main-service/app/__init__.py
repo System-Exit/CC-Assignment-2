@@ -2,13 +2,13 @@ from flask import Flask
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager, current_user, login_user, logout_user
 from config import Config
-from service_interfaces import UserServiceInterface, MessageServiceInterface
+from service_interfaces import UserServiceInterface, EventServiceInterface
 
 # Initialise Flask plugins
 bootstrap = Bootstrap()
 login_manager = LoginManager()
 # Initialise microservice interfaces
-usi = DatabaseInterface()
+usi = UserServiceInterface()
 esi = EventServiceInterface()
 
 

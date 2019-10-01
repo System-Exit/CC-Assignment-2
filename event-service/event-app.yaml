@@ -3,3 +3,4 @@ service: event
 
 env_variables:
   SECRET_KEY: "9b197780-8a29-4105-8657-70041d4a8aa5"
+  CLOUD_ENV: true

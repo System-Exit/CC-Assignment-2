@@ -1,0 +1,40 @@
+{% extends "userlayout.html" %}
+{% block content %}
+<div>
+    {% include "messageblock.html" %}
+    <form id="event-form" action="{{  url_for('main.addeventsubmit') }}" method="POST">
+        {{ form.hidden_tag() }}
+        <div>
+            {{ form.title.label }}
+            <br>
+            {{ form.title() }}
+        </div>
+        <div>
+            {{ form.description.label }}
+            <br>
+            {{ form.description() }}
+        </div>
+        <div>
+            {{ form.address.label }}
+            <br>
+            {{ form.address() }}
+        </div>
+        <div>
+            {{ form.date.label }}
+            <br>
+            {{ form.date() }}
+        </div>
+        <div>
+            {{ form.time.label }}
+            <br>
+            {{ form.time() }}
+        </div>
+        <div>
+            {{ form.travel_method.label }}
+            <br>
+            {{ form.travel_method() }}
+        </div>
+        <div>{{ form.submit() }}</div>
+    </form>
+</div>
+{% endblock %}

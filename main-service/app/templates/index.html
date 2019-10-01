@@ -1,8 +1,8 @@
-{% extends "base.html" %}
+{% extends "userlayout.html" %}
 {% block content %}
-<div id="index-body">
+<div>
     {% include "messageblock.html" %}
-    <h2>You are currently logged in as {{ user.get_username() }}</h2>
+    <h2>You are currently logged in as {{ user.get_username() }}:{{ user.get_id() }}</h2>
     <a href="{{ url_for('main.logout') }}">Log out</a>
 </div>
 {% endblock %}

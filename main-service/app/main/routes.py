@@ -3,7 +3,8 @@ from flask import (Flask, render_template, request, session,
 from flask_login import LoginManager, current_user, login_user, logout_user
 from app import usi, esi, login_manager
 from app.main import bp
-from app.main.forms import UserLoginForm, UserRegistrationForm
+from app.main.forms import UserLoginForm, UserRegistrationForm, EventForm
+from datetime import time, date, datetime
 
 
 @login_manager.user_loader
@@ -93,13 +94,48 @@ def logout():
     return redirect(url_for('main.index'))
 
 
-@bp.routes('/events', methods=['GET', 'POST'])
+@bp.route('/events')
 def eventlist():
     """
     Page for events.
 
     """
+    # Check if user is currently logged in
+    if not current_user.is_authenticated:
+        # Flash warning
+        flash("User login required.", category="error")
+        # Redirect to index page
+        return redirect(url_for(index))
+
     # Get events for current user
     events = esi.getuserevents(current_user.get_id())
     # Render template with events
     return render_template('eventlist.html', events=events)
+
+
+@bp.route('/events/create')
+def addevent():
+    # Define form
+    form = EventForm()
+    # Render template with form
+    return render_template('eventform.html', form=form)
+
+
+@bp.route('/events/create/submit', methods=['POST'])
+def addeventsubmit():
+    # Define form
+    form = EventForm()
+    # Process form
+    if form.validate_on_submit():
+        # Get data
+        title = form.title.data
+        description = form.description.data
+        address = form.address.data
+        user_id = current_user.get_id()
+        time = datetime.combine(form.date.data, form.time.data)
+        travel_method = form.travel_method.data
+        # Create event
+        esi.addevent(title=title, description=description, user_id=user_id,
+                     address=address, time=time, travel_method=travel_method)
+    # Redirect to event list
+    return redirect(url_for('main.eventlist'))

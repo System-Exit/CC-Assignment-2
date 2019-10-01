@@ -1,11 +1,11 @@
 from flask import Flask
 from flask_wtf import FlaskForm
 from wtforms import (StringField, PasswordField, SubmitField,
-                     SelectField, IntegerField)
-from wtforms.fields.html5 import EmailField, DateField
+                     SelectField, IntegerField, TextAreaField)
+from wtforms.fields.html5 import EmailField, DateField, TimeField
 from wtforms.validators import DataRequired, Length, Regexp
 from wtforms import ValidationError
-from app import dbi
+from app import usi
 
 
 class UserLoginForm(FlaskForm):
@@ -45,3 +45,22 @@ class UserRegistrationForm(FlaskForm):
                 validation = False
             # Return whether or not the form was valid
             return validation
+
+
+class EventForm(FlaskForm):
+    """
+    Form for creating events.
+
+    """
+    title = StringField('Title', validators=[
+        DataRequired('Event tile is required.')])
+    description = TextAreaField('Description')
+    address = StringField('Address')
+    date = DateField('Date', validators=[
+        DataRequired('Event date is required.')])
+    time = TimeField('Time', validators=[
+        DataRequired('Event time is required.')])
+    travel_method = SelectField('Travel Method', choices=[
+        ('walk', 'Walk'), ('driving', 'Drive'),
+        ('transit', 'Public Transport'), ('bicycling', 'Bike')])
+    submit = SubmitField('Create Event')

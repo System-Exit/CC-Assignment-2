@@ -97,12 +97,15 @@ class EventServiceInterface:
         # Initialise address
         self.api_address = Config.EVENT_SERVICE_ADDRESS
 
-    def addevent(self, title, description=None, user_id,
-                 address=None, time, travel_method=None):
+    def addevent(self, title=None, description=None, user_id=None,
+                 address=None, time=None, travel_method=None):
         """
         Creates event for user.
 
         """
+        # Ensure that required attributes are given
+        if not title or not user_id or not time:
+            return False
         # Send data for user creation
         data = {
             "title": str(title),
@@ -110,7 +113,7 @@ class EventServiceInterface:
             "user_id": str(user_id),
             "address": str(address),
             "time": time.isoformat(),
-            "tarvel_method": str(travel_method),
+            "travel_method": str(travel_method),
         }
         response = requests.post(
             f"{self.api_address}/addevent", json=data)

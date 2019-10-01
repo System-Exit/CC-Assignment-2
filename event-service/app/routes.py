@@ -14,7 +14,7 @@ def index():
     Index page for database API.
 
     """
-    return "API for users."
+    return "API for events."
 
 
 @bp.route('/getuserevents', methods=['POST'])
@@ -34,10 +34,9 @@ def getuserevents():
         'user_id', '==', data.get('user_id')).stream()
     # Add events to dictionary
     data = dict()
+    data['events'] = dict()
     for event in events:
-        data['events'] = {
-            event.id: event.to_dict()
-        }
+        data['events'][event.id] = event.to_dict()
     # Return event data
     return data
 
