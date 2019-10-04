@@ -4,3 +4,5 @@ service: user
 env_variables:
   SECRET_KEY: "9b197780-8a29-4105-8657-70041d4a8aa5"
   CLOUD_ENV: true
+  BUCKET_NAME: "s3661720-app-bucket"
+  PROFILE_IMAGES_PATH: "profile-images"

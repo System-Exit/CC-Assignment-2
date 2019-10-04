@@ -1,9 +1,12 @@
 from flask import (Flask, render_template, request, session,
                    redirect, url_for, flash, jsonify, abort, Blueprint)
+from werkzeug import secure_filename
 import json
-from app import db
+from config import Config
+from app import db, sc
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
+from google.cloud import storage
 
 # Initialise blueprints
 bp = Blueprint('main', __name__)
@@ -119,6 +122,59 @@ def validateuser():
                        messages=["Invalid password"])
     # Return success
     return jsonify(success=True)
+
+
+@bp.route('/adduserimage', methods=['POST'])
+def adduserimage():
+    """
+    Reveives an image and uploads it to profile image storage.
+
+    """
+    # Ensure that request contains file
+    if 'file' not in request.files:
+        return jsonify(success=False)
+    # Get file and filename from request
+    file = request.files['file']
+    filename = secure_filename(file.filename)
+    # Get blob for profile image
+    bucket = sc.bucket(Config.BUCKET_NAME)
+    blob = bucket.blob(f"{Config.PROFILE_IMAGES_PATH}/{filename}")
+    # Upload new profile image
+    blob.upload_from_file(file)
+    # Make file public
+    blob.make_public()
+    # Set content disposition for PNG and disable caching for quick update
+    blob.content_disposition = 'image/png'
+    blob.cache_control = 'no-cache'
+    blob.patch()
+    # Return success
+    return jsonify(success=True)
+
+
+@bp.route('/getuserimagelink', methods=['POST'])
+def getuserimagelink():
+    """
+    Returns the link to the user's profile image
+
+    """
+    # Get data
+    data = request.get_json()
+    # Check that all required fields are included
+    if not data.get('id'):
+        return jsonify(success=False,
+                       messages=["User id required"])
+    # Check if the user has a profile image in the bucket
+    bucket = sc.bucket(Config.BUCKET_NAME)
+    image_path = f"{Config.PROFILE_IMAGES_PATH}/{data.get('id')}.png"
+    blob = storage.Blob(bucket=bucket, name=image_path)
+    # If the file exists, provide the link
+    if blob.exists():
+        return jsonify(url=blob.public_url)
+    # If file doesn't exist, get and return deafult profile image
+    else:
+        image_path = f"{Config.PROFILE_IMAGES_PATH}/default.png"
+        blob = storage.Blob(bucket=bucket, name=image_path)
+        return jsonify(url=blob.public_url)
 
 
 def check_collection_contains(col_ref, field, value):

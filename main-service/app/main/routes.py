@@ -1,9 +1,11 @@
 from flask import (Flask, render_template, request, session,
                    redirect, url_for, flash, jsonify, abort)
 from flask_login import LoginManager, current_user, login_user, logout_user
+from config import Config
 from app import usi, esi, login_manager
 from app.main import bp
-from app.main.forms import UserLoginForm, UserRegistrationForm, EventForm
+from app.main.forms import (UserLoginForm, UserRegistrationForm, EventForm,
+                            ProfileImageForm)
 from datetime import time, date, datetime
 
 
@@ -94,6 +96,44 @@ def logout():
     return redirect(url_for('main.index'))
 
 
+@bp.route('/profile')
+def userprofile():
+    """
+    Page for user to modify their details.
+
+    """
+    # Get profile image link for user
+    profile_image_link = usi.getuserimagelink(current_user.get_id())
+    # Create and define image upload form
+    imageform = ProfileImageForm()
+    # Render user page
+    return render_template('userprofile.html', user=current_user,
+                           imageform=imageform,
+                           profile_image_link=profile_image_link)
+
+
+@bp.route('/profile/upload-profile-image', methods=['POST'])
+def uploaduserprofileimage():
+    """
+    Page for receiving a user's profile image.
+
+    """
+    # Define form
+    form = ProfileImageForm()
+    # Check that file is contained in post
+    if form.validate_on_submit:
+        # Get file
+        file = form.image.data
+        # Upload file to storage
+        success = usi.adduserimage(current_user.get_id(), file)
+        # Check that image upload was successful
+        if success:
+            # Flash success
+            flash("Profile image successfully changed", category="success")
+    # Redirect to user page
+    return redirect(url_for('main.userprofile'))
+
+
 @bp.route('/events')
 def eventlist():
     """
@@ -105,7 +145,7 @@ def eventlist():
         # Flash warning
         flash("User login required.", category="error")
         # Redirect to index page
-        return redirect(url_for(index))
+        return redirect(url_for('index'))
 
     # Get events for current user
     events = esi.getuserevents(current_user.get_id())

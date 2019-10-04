@@ -1,0 +1,22 @@
+{% extends "userlayout.html" %}
+{% block content %}
+<div id="loading-overlay"><span>Loading...</span></div>
+{% include "messageblock.html" %}
+<div id="user-profile">
+    <h2>{{ user.get_username() }}</h2>
+    <img id="profile-image" src="{{ profile_image_link }}" alt="Profile image">
+    <form id="profile-image-form" action="{{ url_for('main.uploaduserprofileimage') }}" method="POST" enctype="multipart/form-data">
+        {{ imageform.hidden_tag() }}
+        {{ imageform.image.label }}
+        {{ imageform.image() }}
+        {{ imageform.submit() }}
+    </form>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+$(window).load(function(){
+   $('#loading-overlay').fadeOut('fast');
+});
+</script>
+{% endblock %}

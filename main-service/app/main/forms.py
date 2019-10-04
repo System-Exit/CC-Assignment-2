@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileField, FileRequired, FileAllowed
 from wtforms import (StringField, PasswordField, SubmitField,
                      SelectField, IntegerField, TextAreaField)
 from wtforms.fields.html5 import EmailField, DateField, TimeField
@@ -64,3 +65,13 @@ class EventForm(FlaskForm):
         ('walk', 'Walk'), ('driving', 'Drive'),
         ('transit', 'Public Transport'), ('bicycling', 'Bike')])
     submit = SubmitField('Create Event')
+
+
+class ProfileImageForm(FlaskForm):
+    """
+    Form for uploading profile image.
+
+    """
+    image = FileField('Change image', validators=[
+        FileRequired(), FileAllowed(['png'], 'PNG files only.')])
+    submit = SubmitField('Submit')

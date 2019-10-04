@@ -2,18 +2,25 @@ from flask import Flask
 from config import Config
 import firebase_admin
 from firebase_admin import credentials, firestore
+from google.cloud import storage
+import os
 
-# Load service credentials
+# Load credentials depending on environment
 if Config.CLOUD_ENV:
-    cred = credentials.ApplicationDefault()
+    # Since we are in cloud, this has already been defined
+    pass
 else:
-    cred = credentials.Certificate(
-        ('C:/Users/rocky/Documents/RMIT Work/Year 3 Semester 2'
-         '/CC/Assignment 2/service-account-file.json'))
-# Initialise firebase app
+    # Set google credential environment variable explicitly
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = (
+        'C:/Users/rocky/Documents/RMIT Work/Year 3 Semester 2'
+        '/CC/Assignment 2/service-account-file.json'
+    )
+# Initialise firebase interface
+cred = credentials.ApplicationDefault()
 firebase_admin.initialize_app(cred)
-# Define datbase interface
 db = firestore.client()
+# Initialise google storage interface
+sc = storage.Client()
 
 
 def create_app(config_class=Config):

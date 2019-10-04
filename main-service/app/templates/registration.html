@@ -1,20 +1,18 @@
 {% extends "baselayout.html" %}
 {% block content %}
-<div id="registration-body">
-    {% include "messageblock.html" %}
-    <form action="" method="POST" class="login-form">
-        {{ form.hidden_tag() }}
-        <div>
-            {{ form.username.label }}
-            <br>
-            {{ form.username() }}
-        </div>
-        <div>
-            {{ form.password.label }}
-            <br>
-            {{ form.password() }}
-        </div>
-        <div>{{ form.submit() }}</div>
-    </form>
-</div>
+{% include "messageblock.html" %}
+<form action="" method="POST" class="login-form">
+    {{ form.hidden_tag() }}
+    <div>
+        {{ form.username.label }}
+        <br>
+        {{ form.username() }}
+    </div>
+    <div>
+        {{ form.password.label }}
+        <br>
+        {{ form.password() }}
+    </div>
+    <div>{{ form.submit() }}</div>
+</form>
 {% endblock %}

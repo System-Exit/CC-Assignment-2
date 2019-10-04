@@ -1,8 +1,6 @@
 {% extends "baselayout.html" %}
 {% block content %}
-<div id="landing-body">
-    {% include "messageblock.html" %}
-    <a href="{{ url_for('main.login') }}">Log in</a>
-    <a href="{{ url_for('main.registration') }}">Register</a>
-</div>
+{% include "messageblock.html" %}
+<a href="{{ url_for('main.login') }}">Log in</a>
+<a href="{{ url_for('main.registration') }}">Register</a>
 {% endblock %}

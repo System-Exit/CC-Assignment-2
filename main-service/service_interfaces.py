@@ -87,6 +87,43 @@ class UserServiceInterface:
         # Return whether validation was successful along with user id
         return data.get('success'), data.get('id')
 
+    def adduserimage(self, id, file):
+        """
+        Sends image to user service to assign as new profile image.
+
+        Args:
+            id (str): User ID of user to set profile image for.
+            file: Image file that will be the user's new profile image.
+
+        """
+        # Define files
+        files = {'file': (f"{id}.png", file)}
+        # Send file and get response
+        response = requests.post(
+            f"{self.api_address}/adduserimage", files=files)
+        data = response.json()
+        # Return success of the request
+        return data.get('success')
+
+    def getuserimagelink(self, id):
+        """
+        Gets the link for the given user's profile image.
+
+        Args:
+            id (str): User ID of the user to get image of.
+        Returns:
+            The string url for the image.
+
+        """
+        # Define data
+        data = {'id': id}
+        # Send file and get response
+        response = requests.post(
+            f"{self.api_address}/getuserimagelink", json=data)
+        data = response.json()
+        # Return image link
+        return data.get('url')
+
 
 class EventServiceInterface:
     """

@@ -1,17 +1,22 @@
 /* Navigation bar */
+#navigation
+{
+  position: fixed;
+  height: 50px;
+  width: 100%;
+  background-color: #333;
+}
 #navigation ul {
   list-style-type: none;
   margin: 0;
   padding-left: 10px;
   padding-right: 10px;
   overflow: hidden;
-  background-color: #333;
-}
-  
+  height: inherit;
+} 
 #navigation li {
   float: left;
 }
-
 #navigation li a {
   display: block;
   color: white;
@@ -19,9 +24,40 @@
   padding: 14px 16px;
   text-decoration: none;
 }
-
 #navigation li a:hover {
   background-color: #111;
+}
+
+/* Main content base */
+#main-content
+{
+  position: relative;
+  top: 50px
+}
+h1, h2, h3
+{
+  margin: 0;
+}
+
+/* Loading overlay */
+#loading-overlay
+{
+  z-index: 100;
+  position: fixed;
+  top: 50px;
+  height: calc(100% - 50px);
+  width: 100%;
+  background-color: #333;
+  color: white;
+  font-size: 32px;
+}
+#loading-overlay span
+{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
 }
 
 /* Event form */
@@ -32,4 +68,19 @@
 #event-form textarea
 {
   width: 250px;
+}
+
+/* User page */
+#user-profile
+{
+  padding: 20px;
+}
+#profile-image
+{
+  width: 256px;
+  height: 256px;
+}
+#profile-image-form
+{
+  position: relative;
 }
