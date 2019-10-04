@@ -47,7 +47,7 @@ function initAutocomplete() {
   autocomplete = new google.maps.places.Autocomplete(
       document.getElementById('address'), {types: ['geocode']});
   // Restrict the set of fields that are returned
-  autocomplete.setFields(['address_component']);
+  autocomplete.setFields(['formatted_address']);
 }
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCd4mRC2IuplYvR6O4U8XRr2VHsnk8LGNI&libraries=places&callback=initAutocomplete" defer async></script>
