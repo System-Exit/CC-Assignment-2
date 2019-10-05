@@ -134,14 +134,74 @@ class EventServiceInterface:
         # Initialise address
         self.api_address = Config.EVENT_SERVICE_ADDRESS
 
+    def getevent(self, id):
+        """
+        Gets event with given ID.
+
+        Args:
+            id (str): ID of event to get.
+        Returns:
+            The event and it's details.
+            None if the event doesn't exist.
+
+        """
+        # Request event details
+        senddata = {"id": id}
+        response = requests.post(f"{self.api_address}/getevent", json=senddata)
+        recvdata = response.json()
+        # Check if event was returned
+        if not recvdata.get('id'):
+            # Return None
+            return None
+        else:
+            # Return event details
+            return recvdata
+
+    def getuserevents(self, user_id):
+        """
+        Returns the events for a given user.
+
+        Args:
+            user_id (str): ID of user to get events for.
+        Returns:
+            List of events.
+
+        """
+        # Send data for user creation
+        data = {"user_id": user_id}
+        response = requests.post(
+            f"{self.api_address}/getuserevents", json=data)
+        # Get data from repsonse
+        events = response.json()
+        # Process time values from HTTP dates into datetime values
+        for event in events:
+            event['start_time'] = datetime.strptime(
+                event['start_time'], '%a, %d %b %Y %H:%M:%S GMT')
+            event['end_time'] = datetime.strptime(
+                event['end_time'], '%a, %d %b %Y %H:%M:%S GMT')
+        # Return events
+        return events
+
     def addevent(self, title=None, description=None, user_id=None,
-                 address=None, time=None, travel_method=None):
+                 address=None, start_time=None, end_time=None,
+                 travel_method=None):
         """
         Creates event for user.
 
+        Args:
+            title (str): Tile of event to create. Required.
+            description (str): Description of event to create.
+            user_id (str): User ID of event to create. Required.
+            address (str): Address of event to create.
+            start_time (datetime): Start time of event to create. Required.
+            end_time (datetime): End time of event to create. Required.
+            travel_method (str): Travel method of event to create.
+        Returns:
+            Whether or not the event was added successfully.
+
         """
         # Ensure that required attributes are given
-        if not title or not user_id or not time:
+        if not title or not user_id or not start_time or not end_time:
             return False
         # Send data for user creation
         data = {
@@ -149,7 +209,8 @@ class EventServiceInterface:
             "description": str(description),
             "user_id": str(user_id),
             "address": str(address),
-            "time": time.isoformat(),
+            "start_time": start_time.isoformat(),
+            "end_time": end_time.isoformat(),
             "travel_method": str(travel_method),
         }
         response = requests.post(
@@ -159,18 +220,21 @@ class EventServiceInterface:
         # Return whether validation was successful
         return data.get('success')
 
-    def getuserevents(self, user_id):
+    def deleteevent(self, id):
         """
-        Returns the events for a given user.
+        Deletes event with given ID.
+
+        Args:
+            id (str): ID of event to delete.
+        Returns:
+            Whether or not the event was deleted successfully.
 
         """
-        # Send data for user creation
-        data = {"user_id": user_id}
+        # Send data for event deletion
+        data = {"id": id}
         response = requests.post(
-            f"{self.api_address}/getuserevents", json=data)
+            f"{self.api_address}/deleteevent", json=data)
         # Get data from repsonse
         data = response.json()
-        # Parse event into a dictionary
-        events = data.get('events')
-        # Return events
-        return events
+        # Return whether or not the delete was successful
+        return data.get('success')

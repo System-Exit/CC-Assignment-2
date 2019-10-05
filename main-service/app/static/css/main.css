@@ -1,6 +1,7 @@
 /* Navigation bar */
 #navigation
 {
+  z-index: 50;
   position: fixed;
   height: 50px;
   width: 100%;
@@ -60,7 +61,40 @@ h1, h2, h3
   transform: translate(-50%, -50%);
 }
 
+
+/* Event page */
+.event-item
+{
+  width: 100%;
+}
+.event-item h3
+{
+  background-color: #333;
+  font-size: 32px;
+}
+.event-item .ui-state-hover, .event-item .ui-state-active
+{
+  background-color: #111;
+}
+.event-title
+{
+  color: white;
+}
+.event-content
+{
+  padding: 20px;
+  box-shadow: inset 0px 0px 0px 10px #111;
+}
+#event-list-options
+{
+  padding: 10px;
+}
+
 /* Event form */
+#event-form
+{
+  padding: 10px;
+}
 #event-form input
 {
   width: 250px;

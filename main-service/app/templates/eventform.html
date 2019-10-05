@@ -19,14 +19,22 @@
         {{ form.address() }}
     </div>
     <div>
-        {{ form.date.label }}
+        {{ form.start_date.label }}
         <br>
-        {{ form.date() }}
+        {{ form.start_date() }}
+        <br>
+        {{ form.start_time.label }}
+        <br>
+        {{ form.start_time() }}
     </div>
     <div>
-        {{ form.time.label }}
+        {{ form.end_date.label }}
         <br>
-        {{ form.time() }}
+        {{ form.end_date() }}
+        <br>
+        {{ form.end_time.label }}
+        <br>
+        {{ form.end_time() }}
     </div>
     <div>
         {{ form.travel_method.label }}

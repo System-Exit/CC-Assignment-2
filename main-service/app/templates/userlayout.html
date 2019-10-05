@@ -10,14 +10,24 @@
             <ul>
                 <li><a href="{{ url_for('main.index') }}">Home</a></li>
                 <li><a href="{{ url_for('main.userprofile') }}">Profile</a></li>
-                <li><a href="{{ url_for('main.eventlist') }}">Events</a></li>
+                <li><a href="{{ url_for('main.eventlist') }}">Schedule</a></li>
             </ul>
         </div>
         <div id="main-content">
+            <div id="loading-overlay"><span>Loading...</span></div>
             {%- block content %}{% endblock -%}
         </div>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script>
+        // Remove overlay once everything is loaded
+        $(window).on('load', function(){
+            $('#loading-overlay').fadeOut('fast');
+        });
+        // Add overlay when a link is clicked
+        $(window).on('beforeunload', function(){
+            $('#loading-overlay').fadeIn('fast');
+        })
+        </script>
         {%- block scripts %}{% endblock -%}
     </body>
 </html>

@@ -1,6 +1,7 @@
 from flask import (Flask, render_template, request, session,
                    redirect, url_for, flash, jsonify, abort)
 from flask_login import LoginManager, current_user, login_user, logout_user
+from functools import wraps
 from config import Config
 from app import usi, esi, login_manager
 from app.main import bp
@@ -15,6 +16,22 @@ def load_user(userid):
     user = usi.getuser(userid=userid)
     # Return user
     return user
+
+
+def user_login_required(f):
+    """
+    Decorator for routes that require a user to be logged in.
+
+    """
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated:
+            # Flash warning that user login is required
+            flash("User login required.", category="error")
+            # Return redirect to login
+            return redirect(url_for('main.index'))
+        return f(*args, **kwargs)
+    return decorated_function
 
 
 @bp.route('/')
@@ -97,6 +114,7 @@ def logout():
 
 
 @bp.route('/profile')
+@user_login_required
 def userprofile():
     """
     Page for user to modify their details.
@@ -113,6 +131,7 @@ def userprofile():
 
 
 @bp.route('/profile/upload-profile-image', methods=['POST'])
+@user_login_required
 def uploaduserprofileimage():
     """
     Page for receiving a user's profile image.
@@ -135,25 +154,48 @@ def uploaduserprofileimage():
 
 
 @bp.route('/events')
+@user_login_required
 def eventlist():
     """
     Page for events.
 
     """
-    # Check if user is currently logged in
-    if not current_user.is_authenticated:
-        # Flash warning
-        flash("User login required.", category="error")
-        # Redirect to index page
-        return redirect(url_for('index'))
-
     # Get events for current user
     events = esi.getuserevents(current_user.get_id())
+    # Get options
+    options = request.args
+    # Cull event list depending on options
+    if options.get('list') == "all":
+        # Remove nothing from list
+        pass
+    else:
+        # Remove all events that have already happened (Default)
+        now = datetime.now()
+        events = [event for event in events if event['start_time'] > now]
     # Render template with events
     return render_template('eventlist.html', events=events)
 
 
+@bp.route('/event/<id>/delete')
+@user_login_required
+def deleteevent(id):
+    """
+    Deletes specified event.
+
+    """
+    # Delete given event
+    deleted = esi.deleteevent(id)
+    # If successful or error occured, flash message or warning
+    if deleted:
+        flash("Event deleted successfully", category="success")
+    else:
+        flash("Event could not be deleted", category="error")
+    # Redirect to event list
+    return redirect(url_for('main.eventlist'))
+
+
 @bp.route('/events/create')
+@user_login_required
 def addevent():
     # Define form
     form = EventForm()
@@ -162,6 +204,7 @@ def addevent():
 
 
 @bp.route('/events/create/submit', methods=['POST'])
+@user_login_required
 def addeventsubmit():
     # Define form
     form = EventForm()
@@ -172,10 +215,21 @@ def addeventsubmit():
         description = form.description.data
         address = form.address.data
         user_id = current_user.get_id()
-        time = datetime.combine(form.date.data, form.time.data)
+        start_time = datetime.combine(
+            form.start_date.data, form.start_time.data)
+        end_time = datetime.combine(
+            form.end_date.data, form.end_time.data)
         travel_method = form.travel_method.data
         # Create event
         esi.addevent(title=title, description=description, user_id=user_id,
-                     address=address, time=time, travel_method=travel_method)
-    # Redirect to event list
-    return redirect(url_for('main.eventlist'))
+                     address=address, start_time=start_time, end_time=end_time,
+                     travel_method=travel_method)
+        # Redirect to event list
+        return redirect(url_for('main.eventlist'))
+    else:
+        # Flash all form errors
+        for field, errormessages in form.errors.items():
+            for errormessage in errormessages:
+                flash(errormessage, category="error")
+        # Redirect to event list
+        return redirect(url_for('main.addevent'))

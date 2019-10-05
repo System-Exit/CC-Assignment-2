@@ -6,6 +6,7 @@ from wtforms import (StringField, PasswordField, SubmitField,
 from wtforms.fields.html5 import EmailField, DateField, TimeField
 from wtforms.validators import DataRequired, Length, Regexp
 from wtforms import ValidationError
+from datetime import datetime
 from app import usi
 
 
@@ -57,14 +58,32 @@ class EventForm(FlaskForm):
         DataRequired('Event tile is required.')])
     description = TextAreaField('Description')
     address = StringField('Address')
-    date = DateField('Date', validators=[
-        DataRequired('Event date is required.')])
-    time = TimeField('Time', validators=[
-        DataRequired('Event time is required.')])
+    start_date = DateField('Start Date', validators=[
+        DataRequired('Event start date is required.')])
+    end_date = DateField('End Date', validators=[
+        DataRequired('Event end date is required.')])
+    start_time = TimeField('Start time', validators=[
+        DataRequired('Event start time is required.')])
+    end_time = TimeField('End time', validators=[
+        DataRequired('Event end time is required.')])
     travel_method = SelectField('Travel Method', choices=[
         ('walk', 'Walk'), ('driving', 'Drive'),
         ('transit', 'Public Transport'), ('bicycling', 'Bike')])
     submit = SubmitField('Create Event')
+
+    def validate(self):
+        # Get result of other validations
+        res = super(EventForm, self).validate()
+        # Check that times are valid
+        start_datetime = datetime.combine(
+            self.start_date.data, self.start_time.data)
+        end_datetime = datetime.combine(
+            self.end_date.data, self.end_time.data)
+        if start_datetime > end_datetime:
+            self.end_time.errors.append("Event cannot start before it ends.")
+            res = False
+        # Return res
+        return res
 
 
 class ProfileImageForm(FlaskForm):

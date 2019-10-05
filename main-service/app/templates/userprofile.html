@@ -1,6 +1,5 @@
 {% extends "userlayout.html" %}
 {% block content %}
-<div id="loading-overlay"><span>Loading...</span></div>
 {% include "messageblock.html" %}
 <div id="user-profile">
     <h2>{{ user.get_username() }}</h2>
@@ -12,11 +11,4 @@
         {{ imageform.submit() }}
     </form>
 </div>
-{% endblock %}
-{% block scripts %}
-<script>
-$(window).load(function(){
-   $('#loading-overlay').fadeOut('fast');
-});
-</script>
 {% endblock %}
