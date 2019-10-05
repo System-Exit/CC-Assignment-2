@@ -14,9 +14,9 @@
                 {% if event.travel_method == "walking" %} <p>Travel method: Walking</p>{% endif %}
                 {% if event.travel_method == "transit" %} <p>Travel method: Transit</p>{% endif %}
                 {% if event.travel_method == "bicycling" %} <p>Travel method: Cycling</p>{% endif %}
-                <a href="https://www.google.com/maps/dir/?api=1&origin=&destination={{ event.address }}&travelmode={{ event.travel_method }}">Directions from current location.</a><br>
+                <a href="https://www.google.com/maps/dir/?api=1&origin=&destination={{ event.address }}&travelmode={{ event.travel_method }}" target="_blank">Directions from current location.</a><br>
                 {% if loop.previtem is defined %}
-                    <a href="https://www.google.com/maps/dir/?api=1&origin={{ loop.previtem.address }}&destination={{ event.address }}&travelmode={{ event.travel_method }}">Directions from previous event location.</a><br>
+                    <a href="https://www.google.com/maps/dir/?api=1&origin={{ loop.previtem.address }}&destination={{ event.address }}&travelmode={{ event.travel_method }}" target="_blank">Directions from previous event location.</a><br>
                 {% endif %}
                 {% set delete_event_url = url_for('main.deleteevent', id=event.id) %}
                 <button class="btn btn-danger" onclick="DeleteEvent('{{ delete_event_url }}');">Delete event</button>
