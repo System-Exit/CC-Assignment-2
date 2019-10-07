@@ -161,7 +161,7 @@ def eventlist():
 
     """
     # Get events for current user
-    events = esi.getuserevents(current_user.get_id())
+    events, warnings = esi.getuserevents(current_user.get_id())
     # Get options
     options = request.args
     # Cull event list depending on options
@@ -173,7 +173,7 @@ def eventlist():
         now = datetime.now()
         events = [event for event in events if event['start_time'] > now]
     # Render template with events
-    return render_template('eventlist.html', events=events)
+    return render_template('eventlist.html', events=events, warnings=warnings)
 
 
 @bp.route('/event/<id>/delete')

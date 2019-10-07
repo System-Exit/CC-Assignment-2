@@ -164,7 +164,7 @@ class EventServiceInterface:
         Args:
             user_id (str): ID of user to get events for.
         Returns:
-            List of events.
+            List of events and list of warnings.
 
         """
         # Send data for user creation
@@ -172,15 +172,15 @@ class EventServiceInterface:
         response = requests.post(
             f"{self.api_address}/getuserevents", json=data)
         # Get data from repsonse
-        events = response.json()
+        data = response.json()
         # Process time values from HTTP dates into datetime values
-        for event in events:
+        for event in data['events']:
             event['start_time'] = datetime.strptime(
                 event['start_time'], '%a, %d %b %Y %H:%M:%S GMT')
             event['end_time'] = datetime.strptime(
                 event['end_time'], '%a, %d %b %Y %H:%M:%S GMT')
         # Return events
-        return events
+        return data['events'], data['warnings']
 
     def addevent(self, title=None, description=None, user_id=None,
                  address=None, start_time=None, end_time=None,
