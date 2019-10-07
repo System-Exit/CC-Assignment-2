@@ -1,12 +1,18 @@
-from flask import jsonify
-import firebase_admin
-from firebase_admin import credentials, firestore
+"""
+Requirements:
+flask>=1.1.1
+requests>=2.22.0
+
+"""
+import requests
 
 
 def get_user_events(request):
     """
     Takes a HTTP JSON request and returns a JSON array
-    of all events for a given user.
+    of all events for a given user. This is simply a proxy,
+    to another microservice, due to issues faced initialising
+    firestore in google cloud functions.
     Args:
         request (flask.Request): HTTP request object.
         This request should be a JSON specifing the ID
@@ -23,20 +29,9 @@ def get_user_events(request):
     if not request.get('id'):
         return jsonify(success=False,
                        messages=["User id must be specified."])
-    # Load database interface
-    creds = credentials.ApplicationDefault()
-    firebase_admin.initialize_app(creds)
-    db = firestore.client()
-    # Query all events for the user sorted by start time
-    query = db.collection('events')
-    query = query.where('user_id', '==', request.get('id'))
-    query = query.order_by('start_time', direction=firestore.Query.ASCENDING)
-    events = query.stream()
-    # Add events to dictionary
-    events = list()
-    for event in events:
-        event_dict = event.to_dict()
-        event_dict.update({"id": event.id})
-        events.append(event_dict)
-    # Return event data
-    return jsonify(events)
+    # Call event service to get events
+    url = "https://event-dot-lustrous-oasis-253108.appspot.com/getuserevents"
+    response = requests.post(url, json={"user_id": request.get('id')})
+    data = response.json()
+    # Return JSON of events
+    return jsonify(data['events'])
