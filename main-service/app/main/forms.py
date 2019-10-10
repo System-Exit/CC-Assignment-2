@@ -67,7 +67,7 @@ class EventForm(FlaskForm):
     end_time = TimeField('End time', validators=[
         DataRequired('Event end time is required.')])
     travel_method = SelectField('Travel Method', choices=[
-        ('walk', 'Walk'), ('driving', 'Drive'),
+        ('walking', 'Walk'), ('driving', 'Drive'),
         ('transit', 'Public Transport'), ('bicycling', 'Bike')])
     submit = SubmitField('Create Event')
 

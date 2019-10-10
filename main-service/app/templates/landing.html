@@ -1,6 +1,10 @@
 {% extends "baselayout.html" %}
 {% block content %}
 {% include "messageblock.html" %}
-<a href="{{ url_for('main.login') }}">Log in</a>
-<a href="{{ url_for('main.registration') }}">Register</a>
+<div id="landing-buttons-container">
+    {% set login_url = url_for('main.login') %}
+    {% set registration_url = url_for('main.registration') %}
+    <button onclick="window.location.href='{{ login_url }}'">Log In</button>
+    <button onclick="window.location.href='{{ registration_url }}'">Register</button>
+</div>
 {% endblock %}

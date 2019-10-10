@@ -1,6 +1,5 @@
 {% extends "userlayout.html" %}
 {% block content %}
-{% include "messageblock.html" %}
 <div id="event-list">
     {% for event in events %}
         <div id="event-{{ event.id }}" class="event-item" data-id="{{ event.id }}">
@@ -20,6 +19,17 @@
                 {% endif %}
                 {% set delete_event_url = url_for('main.deleteevent', id=event.id) %}
                 <button class="btn btn-danger" onclick="DeleteEvent('{{ delete_event_url }}');">Delete event</button>
+                {% if warnings %}
+                    <div id="warnings-container">
+                    {% for warning in warnings %}
+                        {% if warning.from_event_id == event.id or warning.to_event_id == event.id %}
+                            <div class="alert alert-warning" role="alert">
+                                <p>Warning: {{ warning.message }}</p>
+                            </div>
+                        {% endif%}
+                    {% endfor %}
+                    </div>
+                {% endif %}
             </div>
         </div>
     {% endfor %}
@@ -32,6 +42,7 @@
     {% set list_all_url = url_for('main.eventlist')+"?list=all" %}
     <button class="btn btn-success" onclick="location.href='{{ list_all_url }}';">List all events</button>
 </div>
+{% include "messageblock.html" %}
 {% endblock %}
 {% block scripts %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>

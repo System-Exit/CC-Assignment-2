@@ -75,7 +75,7 @@ def getuserevents():
     for warning in warnings:
         warning_dict = warning.to_dict()
         warning_dict.update({"id": warning.id})
-        data['warnings'].append(event_dict)
+        data['warnings'].append(warning_dict)
     # Return event data
     return jsonify(data)
 
@@ -175,6 +175,7 @@ def generatewarnings(event_now):
             event_before = prev_event
         elif event_before is not None:
             event_after = event
+            break
         prev_event = event
     # Call Google maps directions API to get the times between the events
     travel_time_to = timedelta(0)
@@ -186,41 +187,45 @@ def generatewarnings(event_now):
     # If time between events is less than travel time between them with
     # a tolerance of one minute, create a suitable warning.
     # Check for time conflicts and generate warning for before and new events
-    time_between_events = (event_now.to_dict()['start_time'] -
-                           event_before.to_dict()['end_time'])
-    if time_between_events < (travel_time_to - timedelta(minutes=1)):
-        diff_min = (travel_time_to - time_between_events).total_seconds() // 60
-        warning_message = (
-            f"Time to get from event \"{event_before.to_dict()['title']}\" to "
-            f"\"{event_now.to_dict()['title']}\" by "
-            f"{event_before.to_dict()['travel_method']} is {diff_min} "
-            f"minutes more than between the end of first event and start of "
-            f"the second event. Consider rescheduling events or changing mode "
-            f"of transport.")
-        db.collection('event_warnings').add({
-            'from_event_id': prev_event.id,
-            'to_event_id': event_now.id,
-            'user_id': event_user_id,
-            'message': warning_message
-        })
+    if event_before is not None:
+        time_between_events = (event_now.to_dict()['start_time'] -
+                               event_before.to_dict()['end_time'])
+        if time_between_events < (travel_time_to - timedelta(minutes=1)):
+            diff_min = (
+                travel_time_to - time_between_events).total_seconds() // 60
+            warning_message = (
+                f"Time to get from event \"{event_before.to_dict()['title']}\""
+                f" to \"{event_now.to_dict()['title']}\" by "
+                f"{event_before.to_dict()['travel_method']} is {diff_min} "
+                f"minutes more than between the end of first event and start "
+                f"of the second event. Consider rescheduling events or "
+                f"changing mode of transport.")
+            db.collection('event_warnings').add({
+                'from_event_id': event_before.id,
+                'to_event_id': event_now.id,
+                'user_id': event_user_id,
+                'message': warning_message
+            })
     # Check for time conflicts and generate warning for new and after events
-    time_between_events = (event_after.to_dict()['start_time'] -
-                           event_now.to_dict()['end_time'])
-    if time_between_events < (travel_time_from - timedelta(minutes=1)):
-        diff_min = (travel_time_to - time_between_events).total_seconds() // 60
-        warning_message = (
-            f"Time to get from event \"{event_now.to_dict()['title']}\" to "
-            f"\"{event_after.to_dict()['title']}\" by "
-            f"{event_now.to_dict()['travel_method']} is {diff_min} "
-            f"minutes more than between the end of first event and start of "
-            f"the second event. Consider rescheduling events or changing mode "
-            f"of transport.")
-        db.collection('event_warnings').add({
-            'from_event_id': event_now.id,
-            'to_event_id': event_after.id,
-            'user_id': event_user_id,
-            'message': warning_message
-        })
+    if event_after is not None:
+        time_between_events = (event_after.to_dict()['start_time'] -
+                               event_now.to_dict()['end_time'])
+        if time_between_events < (travel_time_from - timedelta(minutes=1)):
+            diff_min = int(
+                travel_time_to - time_between_events).total_seconds() // 60
+            warning_message = (
+                f"Time to get from event \"{event_now.to_dict()['title']}\" "
+                f"to \"{event_after.to_dict()['title']}\" by "
+                f"{event_now.to_dict()['travel_method']} is {diff_min} "
+                f"minutes more than between the end of first event and start "
+                f"of the second event. Consider rescheduling events or "
+                f"changing mode of transport.")
+            db.collection('event_warnings').add({
+                'from_event_id': event_now.id,
+                'to_event_id': event_after.id,
+                'user_id': event_user_id,
+                'message': warning_message
+            })
 
 
 def timebetweenevents(fromevent, toevent):
@@ -243,7 +248,7 @@ def timebetweenevents(fromevent, toevent):
     response = requests.get(address)
     data = response.json()
     # Get total time of the first route if one exists
-    travel_time = None
+    travel_time = timedelta(0)
     if len(data['routes']) > 0:
         seconds = data['routes'][0]['legs'][0]['duration']['value']
         travel_time = timedelta(seconds=seconds)
