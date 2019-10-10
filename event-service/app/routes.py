@@ -191,8 +191,8 @@ def generatewarnings(event_now):
         time_between_events = (event_now.to_dict()['start_time'] -
                                event_before.to_dict()['end_time'])
         if time_between_events < (travel_time_to - timedelta(minutes=1)):
-            diff_min = (
-                travel_time_to - time_between_events).total_seconds() // 60
+            diff_min = int((
+                travel_time_to - time_between_events).total_seconds() // 60)
             warning_message = (
                 f"Time to get from event \"{event_before.to_dict()['title']}\""
                 f" to \"{event_now.to_dict()['title']}\" by "
@@ -211,8 +211,8 @@ def generatewarnings(event_now):
         time_between_events = (event_after.to_dict()['start_time'] -
                                event_now.to_dict()['end_time'])
         if time_between_events < (travel_time_from - timedelta(minutes=1)):
-            diff_min = int(
-                travel_time_to - time_between_events).total_seconds() // 60
+            diff_min = int((
+                travel_time_to - time_between_events).total_seconds() // 60)
             warning_message = (
                 f"Time to get from event \"{event_now.to_dict()['title']}\" "
                 f"to \"{event_after.to_dict()['title']}\" by "
