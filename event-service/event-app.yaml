@@ -1,6 +1,16 @@
-runtime: python37
+runtime: python
+env: flex
 service: event
+entrypoint: gunicorn -b :$PORT main:app
+
+runtime_config:
+  python_version: 3.7
 
 env_variables:
   SECRET_KEY: "9b197780-8a29-4105-8657-70041d4a8aa5"
   CLOUD_ENV: true
+  ROUTES_API_KEY: "AIzaSyCd4mRC2IuplYvR6O4U8XRr2VHsnk8LGNI"
+
+endpoints_api_service:
+  name: event-dot-lustrous-oasis-253108.appspot.com
+  rollout_strategy: managed

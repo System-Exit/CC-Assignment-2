@@ -1,0 +1,57 @@
+swagger: "2.0"
+info:
+  title: "CC A2 Scheduler API."
+  description: "Endpoints API for schedule application."
+  version: "1.0.0"
+host: "event-dot-lustrous-oasis-253108.appspot.com"
+schemes:
+  - "https"
+paths:
+  "/getuserevents":
+    post:
+      summary: "Returns the events and event warnings for a given user."
+      description: >
+        "Takes a JSON dictionary with 'id' defined with the desired user's ID."
+        " Returns a dictionary containing two arrays in a dictionary with the"
+        " keys 'events' and 'warnings'."
+      operationId: "getUserEvents"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "OK."
+        400:
+          description: "'id' parameter is not defined or is invalid."
+  "/addevent":
+    post:
+      summary: "Adds an event to the database with given parameters"
+      description: > 
+        "Takes a JSON dictionary with the following parameters:"
+        "'user_id', 'title', 'description', 'start_time', 'end_time', 'travel_method'."
+        "The parameters 'user_id', 'title', 'start_time', 'end_time' are required."
+      operationId: "addEvent"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "OK."
+        400:
+          description: "Required parameters are not defined or are invalid."
+  "/deleteevent":
+    post:
+      summary: "Deletes an event for a user with the given event ID."
+      description: "Takes a JSON dictionary with 'id' defined with the desired event's ID."
+      operationId: "deleteEvent"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "OK."
+        400:
+          description: "'id' parameter is not defined or is invalid."
