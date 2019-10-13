@@ -55,12 +55,22 @@ def getuserevents():
     if not data.get('user_id'):
         return jsonify(success=False,
                        messages=["User id must be specified."])
-    # Query all events for the user sorted by start time
+    from_time = None
+    to_time = None
+    if data.get('from_time'):
+        from_time = parser.parse(data.get('from_time'))
+    if data.get('to_time'):
+        to_time = parser.parse(data.get('to_time'))
+    # Query all events for the user sorted by start time and match criterea
     query = db.collection('events')
     query = query.where('user_id', '==', data.get('user_id'))
+    if from_time:
+        query = query.where('start_time', '>=', from_time)
+    if to_time:
+        query = query.where('start_time', '<=', to_time)
     query = query.order_by('start_time', direction=firestore.Query.ASCENDING)
     events = query.stream()
-    # Query all event warning for the user
+    # Query all event warnings for the user that relate to any queried event
     query = db.collection('event_warnings')
     query = query.where('user_id', '==', data.get('user_id'))
     warnings = query.stream()
@@ -68,14 +78,20 @@ def getuserevents():
     data = dict()
     data['events'] = list()
     data['warnings'] = list()
+    # Iterate over and add events
     for event in events:
         event_dict = event.to_dict()
         event_dict.update({"id": event.id})
         data['events'].append(event_dict)
+    # Iterate over and add warnings
     for warning in warnings:
         warning_dict = warning.to_dict()
         warning_dict.update({"id": warning.id})
-        data['warnings'].append(warning_dict)
+        # Only append warning if it relates to one of the events
+        if warning_dict['from_event_id'] in map(
+                lambda e: e['id'], data['events']) or warning_dict[
+                'to_event_id'] in map(lambda e: e['id'], data['events']):
+            data['warnings'].append(warning_dict)
     # Return event data
     return jsonify(data)
 

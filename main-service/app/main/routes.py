@@ -160,19 +160,25 @@ def eventlist():
     Page for events.
 
     """
-    # Get events for current user
-    events, warnings = esi.getuserevents(current_user.get_id())
     # Get options
     options = request.args
     # Cull event list depending on options
     if options.get('list') == "all":
-        # Remove nothing from list
-        pass
+        # Get all events for current user
+        events, warnings = esi.getuserevents(current_user.get_id())
+    # Remove all events that have already happened (Default)
     else:
-        # Remove all events that have already happened (Default)
-        now = datetime.now()
-        events = [event for event in events if event['start_time'] > now]
-    # Render template with events
+        now = datetime.utcnow()
+        events, warnings = esi.getuserevents(current_user.get_id(),
+                                             from_time=now)
+    # Add whether or not an event has a warning to event directory
+    for event in events:
+        if event['id'] in (w[x] for x in [
+                'from_event_id', 'to_event_id'] for w in warnings):
+            event['warning'] = True
+        else:
+            event['warning'] = False
+    # Render template with events and warnings
     return render_template('eventlist.html', events=events, warnings=warnings)
 
 

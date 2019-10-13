@@ -134,6 +134,16 @@
 {
   background-color: #333;
   font-size: 32px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.event-item h3.warnings-present::after
+{
+  content: "!";
+  text-align: right;
+  float:right;
+  font-weight: 900;
+  color: yellow;
 }
 .event-item .ui-state-hover, .event-item .ui-state-active
 {

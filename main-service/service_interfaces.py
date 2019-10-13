@@ -157,18 +157,27 @@ class EventServiceInterface:
             # Return event details
             return recvdata
 
-    def getuserevents(self, user_id):
+    def getuserevents(self, user_id, from_time=None, to_time=None):
         """
-        Returns the events for a given user.
+        Returns the events and event warnings for a given user.
 
         Args:
             user_id (str): ID of user to get events for.
+            from_time (datetime): Lower time range for events to get.
+                Defaults to None.
+            to_time (datetime): Upper time range for events to get.
+                Defaults to None.
         Returns:
             List of events and list of warnings.
 
         """
-        # Send data for user creation
+        # Create data for getting user events
         data = {"user_id": user_id}
+        if from_time:
+            data.update({"from_time": from_time.isoformat()})
+        if to_time:
+            data.update({"to_time": to_time.isoformat()})
+        # Send data for user creation
         response = requests.post(
             f"{self.api_address}/getuserevents", json=data)
         # Get data from repsonse

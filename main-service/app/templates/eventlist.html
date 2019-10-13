@@ -3,7 +3,8 @@
 <div id="event-list">
     {% for event in events %}
         <div id="event-{{ event.id }}" class="event-item" data-id="{{ event.id }}">
-            <h3 class="event-title">{{ event.title }}</h3>
+            {# If event has warnings, add warning class #}
+            <h3 class="event-title {{ 'warnings-present' if event.warning else '' }}">{{ event.title }}</h3>
             <div class="event-content">
                 <p>Description: {{ event.description }}</p>
                 <p>Address: {{ event.address }}</p>
@@ -19,7 +20,7 @@
                 {% endif %}
                 {% set delete_event_url = url_for('main.deleteevent', id=event.id) %}
                 <button class="btn btn-danger" onclick="DeleteEvent('{{ delete_event_url }}');">Delete event</button>
-                {% if warnings %}
+                {% if warnings|length %}
                     <div id="warnings-container">
                     {% for warning in warnings %}
                         {% if warning.from_event_id == event.id or warning.to_event_id == event.id %}
@@ -42,6 +43,10 @@
     {% set list_all_url = url_for('main.eventlist')+"?list=all" %}
     <button class="btn btn-success" onclick="location.href='{{ list_all_url }}';">List all events</button>
 </div>
+{# If there are any warning, imform the user #}
+{% if warnings|length %}
+    <div class="alert alert-warning" role="alert">Some events have warnings. You may either rectify or ignore them.</div>
+{% endif %}
 {% include "messageblock.html" %}
 {% endblock %}
 {% block scripts %}
