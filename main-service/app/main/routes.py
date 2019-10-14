@@ -168,7 +168,7 @@ def eventlist():
         events, warnings = esi.getuserevents(current_user.get_id())
     # Remove all events that have already happened (Default)
     else:
-        now = datetime.utcnow()
+        now = datetime.now()
         events, warnings = esi.getuserevents(current_user.get_id(),
                                              from_time=now)
     # Add whether or not an event has a warning to event directory

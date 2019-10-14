@@ -34,19 +34,19 @@ class UserRegistrationForm(FlaskForm):
     submit = SubmitField('Register')
 
     def validate(self):
-            # Do initial validations
-            validation = super(UserRegistrationForm, self).validate()
-            # Return false if validations fail
-            if validation is False:
-                return False
-            # Check if username is already taken
-            if dbi.getuser(username=self.username.data) is not None:
-                # Add error and set valid to false
-                self.username.errors.append(
-                    "Username is already used by another account")
-                validation = False
-            # Return whether or not the form was valid
-            return validation
+        # Do initial validations
+        validation = super(UserRegistrationForm, self).validate()
+        # Return false if validations fail
+        if validation is False:
+            return False
+        # Check if username is already taken
+        if usi.getuser(username=self.username.data) is not None:
+            # Add error and set valid to false
+            self.username.errors.append(
+                "Username is already used by another account")
+            validation = False
+        # Return whether or not the form was valid
+        return validation
 
 
 class EventForm(FlaskForm):
