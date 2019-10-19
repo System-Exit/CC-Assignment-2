@@ -3,15 +3,18 @@ from config import Config
 import firebase_admin
 from firebase_admin import credentials, firestore
 
-# Load service credentials
+# Load credentials depending on environment
 if Config.CLOUD_ENV:
-    cred = credentials.ApplicationDefault()
+    # Since we are in cloud, this has already been defined
+    pass
 else:
-    cred = credentials.Certificate(
-        ('C:/Users/rocky/Documents/RMIT Work/Year 3 Semester 2'
-         '/CC/Assignment 2/service-account-file.json'))
-# Initialise firebase app
+    # Set google credential environment variable explicitly
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = (
+        Config.SERVICE_ACCOUNT_FILE)
+# Initialise firebase interface
+cred = credentials.ApplicationDefault()
 firebase_admin.initialize_app(cred)
+db = firestore.client()
 # Define datbase interface
 db = firestore.client()
 

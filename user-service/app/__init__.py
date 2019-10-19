@@ -12,9 +12,7 @@ if Config.CLOUD_ENV:
 else:
     # Set google credential environment variable explicitly
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = (
-        'C:/Users/rocky/Documents/RMIT Work/Year 3 Semester 2'
-        '/CC/Assignment 2/service-account-file.json'
-    )
+        Config.SERVICE_ACCOUNT_FILE)
 # Initialise firebase interface
 cred = credentials.ApplicationDefault()
 firebase_admin.initialize_app(cred)
